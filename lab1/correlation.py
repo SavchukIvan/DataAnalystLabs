@@ -4,11 +4,33 @@ from scipy import stats
 import matplotlib.pyplot as plt
 
 
+def correl_matrix(df):
+    A = df.corr(method='pearson')
+    eigenvalues, eigenvectors = np.linalg.eig(A)
+    #print(eigenvalues)
+    #print(eigenvectors)
+
+
+def normalize(df, mean, std):
+    '''
+    Function implements normalization of dataframe
+    by formula z = (x - mean)/std
+    More inf: scipy.stats.zscore
+    '''
+    names = df.columns.values
+    dz_cols = [stats.zscore(df[i].values) for i in range(len(df.columns))]
+    zipped = list(zip(names, dz_cols))
+    data = dict(zipped)
+    load = pd.DataFrame(data)
+    print(load.head(4))
+    return load
+
+
 def normal_test(df):
     '''
     Function display information about
     every column ditribution inside dataset.
-    Shapiro-Wilk test used(info: scipy.stats.shapiro)
+    normaltest test used(info: scipy.stats.normaltest)
     '''
     names = ['Statistics', 'P-value', 'Result']
     stat, p, res = [], [], []
@@ -39,7 +61,7 @@ def graphs(df):
     plt.style.use('seaborn')
     for i in range(len(df.columns)):
         plt.subplot(2, 4, i+1)
-        plt.hist(df[i].values, bins=10, ec='orange')
+        plt.hist(df[i].values, bins=20, ec='orange')
         plt.title('Column #{}'.format(i+1))
     plt.tight_layout()
     plt.show()
@@ -62,10 +84,13 @@ def stat_info(df):
     data = dict(zipped)
     stats = pd.DataFrame(data)
     print(stats)
+    return mean, std
 
 
 if __name__ == "__main__":
-    df = pd.read_csv('row_data.txt', sep='\s+', header=None)
-    stat_info(df)
-    normal_test(df)
-    graphs(df)
+    df = pd.read_csv('kpi17.txt', sep='\s+', header=None)
+    mean, std = stat_info(df)
+    #  normal_test(df)
+    #  graphs(df)
+    dz = normalize(df, mean, std)
+    correl_matrix(dz)
