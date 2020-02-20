@@ -7,8 +7,9 @@ import matplotlib.pyplot as plt
 def correl_matrix(df):
     A = df.corr(method='pearson')
     eigenvalues, eigenvectors = np.linalg.eig(A)
-    #print(eigenvalues)
-    #print(eigenvectors)
+    print(A)
+    print(eigenvalues)
+    print(eigenvectors)
 
 
 def normalize(df, mean, std):
@@ -90,7 +91,7 @@ def stat_info(df):
 if __name__ == "__main__":
     df = pd.read_csv('kpi17.txt', sep='\s+', header=None)
     mean, std = stat_info(df)
-    #  normal_test(df)
-    #  graphs(df)
+    normal_test(df)
+    graphs(df)
     dz = normalize(df, mean, std)
     correl_matrix(dz)
