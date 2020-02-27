@@ -65,15 +65,14 @@ def variance(df):
     name = ['Varince']
     for i in range(len(df.columns)):
         varc.append(df[i].values.var())
-    
+
     zipped = list(zip(name, [varc]))
     data = dict(zipped)
     stats = pd.DataFrame(data)
     print(stats)
 
     g = max(varc) / sum(varc)
-    print(g)
-    
+    print(g) 
 
 
 if __name__ == "__main__":

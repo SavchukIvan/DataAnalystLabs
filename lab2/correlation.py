@@ -4,10 +4,28 @@ from scipy import stats
 import matplotlib.pyplot as plt
 
 
-def correl_matrix(df):
+def correl_matrix(df, mean, std):
+    cov = []
+    xx = []
+    xx_names = []
+    for i in range(len(df.columns)):
+        for j in range(len(df.columns)):
+            if i >= j:
+                continue
+            else:
+                xx.append(np.mean([df[i].values[k] * df[j].values[k] for k in range(len(df[0].values))]))
+                xx_names.append('x{}x{}'.format(i, j))
+                cov.append((mean[i]*mean[j] - xx[i])/(std[i]*std[j]))
+    print('cov', cov)
+    print(xx_names, '\n', xx)
+                
+            
     A = df.corr(method='pearson')
+    #B = df.corr(method='kendall')
+    #C = df.corr(method='spearman')
     eigenvalues, eigenvectors = np.linalg.eig(A)
-    print(A)
+    #print(A,'\n', B,'\n', C, '\n')
+    print(np.linalg.det(A))
     print(eigenvalues)
     print(eigenvectors)
 
@@ -19,11 +37,12 @@ def normalize(df, mean, std):
     More inf: scipy.stats.zscore
     '''
     names = df.columns.values
-    dz_cols = [stats.zscore(df[i].values) for i in range(len(df.columns))]
+    dz_cols = [(df[i].values - mean[i])/std[i]  for i in range(len(df.columns))]
+    #dz_cols = [stats.zscore(df[i].values, ddof=1) for i in range(len(df.columns))]
     zipped = list(zip(names, dz_cols))
     data = dict(zipped)
     load = pd.DataFrame(data)
-    print(load.head(4))
+    print(load)
     return load
 
 
@@ -61,7 +80,7 @@ def graphs(df):
     '''
     plt.style.use('seaborn')
     for i in range(len(df.columns)):
-        plt.subplot(2, 4, i+1)
+        plt.subplot(2, 3, i+1)
         plt.hist(df[i].values, bins=20, ec='orange')
         plt.title('Column #{}'.format(i+1))
     plt.tight_layout()
@@ -89,9 +108,11 @@ def stat_info(df):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv('kpi17.txt', sep='\s+', header=None)
+    a = pd.read_csv('kpi17.txt', sep='\s+', header=None)
+    df = a.loc[:, a.columns != 0]
+    df.columns = [i for i in range(6)]
     mean, std = stat_info(df)
-    normal_test(df)
-    graphs(df)
+    #normal_test(df)
+    #graphs(df)
     dz = normalize(df, mean, std)
-    correl_matrix(dz)
+    correl_matrix(dz, mean, std)
