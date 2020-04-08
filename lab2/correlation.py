@@ -18,13 +18,12 @@ def correl_matrix(df, mean, std):
                 cov.append((mean[i]*mean[j] - xx[i])/(std[i]*std[j]))
     print('cov', cov)
     print(xx_names, '\n', xx)
-                
-            
+
     A = df.corr(method='pearson')
-    #B = df.corr(method='kendall')
-    #C = df.corr(method='spearman')
+    # B = df.corr(method='kendall')
+    # C = df.corr(method='spearman')
     eigenvalues, eigenvectors = np.linalg.eig(A)
-    #print(A,'\n', B,'\n', C, '\n')
+    # print(A,'\n', B,'\n', C, '\n')
     print(np.linalg.det(A))
     print(eigenvalues)
     print(eigenvectors)
@@ -111,8 +110,9 @@ if __name__ == "__main__":
     a = pd.read_csv('kpi17.txt', sep='\s+', header=None)
     df = a.loc[:, a.columns != 0]
     df.columns = [i for i in range(6)]
+    graphs(df)
     mean, std = stat_info(df)
-    #normal_test(df)
-    #graphs(df)
+    # normal_test(df)
+    # graphs(df)
     dz = normalize(df, mean, std)
     correl_matrix(dz, mean, std)
